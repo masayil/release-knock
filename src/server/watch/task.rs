@@ -19,7 +19,7 @@ pub async fn watch_spawn_task(
         Instant::now() + Duration::from_secs(15),
         Duration::from_secs(period),
     );
-    let _ = intv.set_missed_tick_behavior(MissedTickBehavior::Delay);
+    intv.set_missed_tick_behavior(MissedTickBehavior::Delay);
     while !sub_sys.is_shutdown_requested() {
         tokio::select! {
             _ = intv.tick() =>{handle_task(worker.clone(), headers.clone(), release_tx.clone()).await; }
