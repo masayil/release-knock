@@ -1,0 +1,27 @@
+version: "3.8"
+services:
+  release-knock:
+    container_name: release-knock
+    restart: on-failure
+    build:
+      context: ../
+      dockerfile: docker/Dockerfile
+    image: release-knock:latest
+    volumes:
+      - ./config.json:/app/config.json
+      - release-data:/app/data
+    command: >
+      /app/release-knock server --config-file config.json
+    networks:
+      - release-knock
+    logging:
+      driver: "json-file"
+      options:
+        max-size: "10m"
+        max-file: "5"
+networks:
+  release-knock:
+    driver: bridge
+volumes:
+  release-data:
+    driver: local
