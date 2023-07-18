@@ -1,0 +1,4 @@
+[toolchain]
+# match with version in DockerFile
+channel = "1.70.0"
+profile = "default"

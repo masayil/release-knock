@@ -1,0 +1,9 @@
+# Convert /* */ comments to // comments where possible
+normalize_comments = true
+
+# Merge imports from the same module into a single use statement. Conversely, imports from different modules are split into separate statements.
+imports_granularity = "Crate"
+
+binop_separator = "Back"
+
+use_field_init_shorthand = true
