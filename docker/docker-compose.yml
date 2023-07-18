@@ -1,6 +1,6 @@
 version: "3.8"
 services:
-  watch-release:
+  release-knock:
     container_name: release-knock
     restart: on-failure
     build:
