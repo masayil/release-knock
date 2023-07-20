@@ -1,6 +1,6 @@
 mod task;
 use crate::{
-    params::{db, db::DbKeyFlag, WATCH_PULL_TIMEOUT, WATCH_RETRY},
+    params::{db, db::DbKeyFlag, WATCH_PULL_TIMEOUT},
     server::config::Repo,
 };
 use anyhow::{anyhow, Context};
@@ -27,6 +27,10 @@ impl Worker {
             db,
             retry,
         }
+    }
+
+    fn update_retry_times(&mut self) {
+        self.retry += 1;
     }
 
     async fn handle_new_release(
@@ -92,7 +96,7 @@ pub async fn start_watch_module(
 ) -> anyhow::Result<()> {
     info!("Watch module is running");
     for v in repo_list.into_iter() {
-        let worker = Worker::new(db.clone(), retry_interval, v, WATCH_RETRY);
+        let worker = Worker::new(db.clone(), retry_interval, v, 0);
         let headers = headers.clone();
         let release_tx = release_tx.clone();
         sub_sys.start(worker.repo.name.clone().as_str(), move |child| {

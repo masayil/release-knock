@@ -1,6 +1,6 @@
 [package]
 name = "release-knock"
-version = "0.1.0"
+version = "0.1.1"
 edition = "2021"
 authors = ["masayil"]
 description = "When new latest version released, notify users by alert provider."
