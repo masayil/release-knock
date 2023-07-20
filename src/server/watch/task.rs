@@ -1,5 +1,5 @@
 use super::Worker;
-use crate::params::db;
+use crate::params::{db, WATCH_RETRY};
 use log::{debug, error};
 use reqwest::header::HeaderMap;
 use tokio::{
@@ -30,9 +30,21 @@ pub async fn watch_spawn_task(
     Ok(())
 }
 
-async fn handle_task(worker: Worker, headers: HeaderMap, release_tx: Sender<db::Release>) {
-    let result = worker.handle_new_release(release_tx, headers).await;
-    if let Err(e) = result {
-        error!("Get {} release info failed. Error: {}", worker.repo.name, e);
+async fn handle_task(mut worker: Worker, headers: HeaderMap, release_tx: Sender<db::Release>) {
+    while worker.retry <= WATCH_RETRY {
+        let result = worker
+            .handle_new_release(release_tx.clone(), headers.clone())
+            .await;
+        if let Err(e) = result {
+            error!(
+                "Get {} release info failed. Error: {}. Retry times: {}",
+                worker.repo.name, e, worker.retry
+            );
+            worker.update_retry_times();
+            time::sleep(Duration::from_secs(worker.retry_interval)).await;
+            continue;
+        } else {
+            break;
+        }
     }
 }
